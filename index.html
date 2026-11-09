@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marjo Travel – Calculateur de devis</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=La+Belle+Aurore&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF3E4; --surface:#FFFBF3; --ink:#2B3B3C; --muted:#6B7B78; --line:#EAD9B8; --sand:#F1DFB9;
+  --teal:#0E9AA0; --teal-deep:#0A6F76; --teal-soft:#D7F0EC; --gold:#F2B544; --pencil:#7C766D;
+  --sum-bg:#0B6F78; --sum-ink:#FFF6E2; --sum-muted:#B8E3DE; --sum-line:#2E8A90;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F2A2C; --surface:#163B3E; --ink:#F6EBD3; --muted:#A8BDB5; --line:#2A5256; --sand:#1D4044;
+    --teal:#3CC3C0; --teal-deep:#7FDAD5; --teal-soft:#1B4A4D; --pencil:#C9C1B1;
+    --sum-bg:#0A1E20; --sum-ink:#FFF6E2; --sum-muted:#9FCBC6; --sum-line:#24494C; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F2A2C; --surface:#163B3E; --ink:#F6EBD3; --muted:#A8BDB5; --line:#2A5256; --sand:#1D4044;
+  --teal:#3CC3C0; --teal-deep:#7FDAD5; --teal-soft:#1B4A4D; --pencil:#C9C1B1;
+  --sum-bg:#0A1E20; --sum-ink:#FFF6E2; --sum-muted:#9FCBC6; --sum-line:#24494C; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "DM Sans",system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 18px 56px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:14px;border-bottom:2px solid var(--sand)}
+.logo{width:104px;height:81px;color:var(--pencil);flex:none}
+.brand{font:400 38px/1.1 "La Belle Aurore","Caveat",cursive;color:var(--pencil)}
+.tag{color:var(--muted);font-size:14px}
+nav{margin-left:auto;display:flex;gap:6px;background:var(--sand);padding:5px;border-radius:999px}
+nav button{border:0;background:transparent;color:var(--ink);font:600 15px "DM Sans",sans-serif;padding:9px 18px;border-radius:999px;cursor:pointer}
+nav button[aria-selected=true]{background:var(--teal-deep);color:#fff}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) nav button[aria-selected=true]{color:#0A1E20}}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+h1{font:700 clamp(26px,4.5vw,38px)/1.12 "Bricolage Grotesque",sans-serif;margin:24px 0 6px}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 22px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:24px;align-items:start}
+@media(max-width:880px){.grid{grid-template-columns:1fr}}
+fieldset{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:18px;margin:0 0 16px;min-width:0}
+legend{font:700 18px "Bricolage Grotesque",sans-serif;padding:0 8px;margin-left:-8px}
+.hint{color:var(--muted);font-size:14px;margin:0 0 12px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:520px){.row{grid-template-columns:1fr}}
+.lbl{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.lbl label{font-weight:600;font-size:14px}
+select,input[type=number]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.chev{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--teal-deep);cursor:pointer;display:grid;place-items:center;padding:0}
+.chev svg{width:14px;height:14px;transition:transform .2s}
+.chev[aria-expanded=true] svg{transform:rotate(90deg)}
+.chev[aria-expanded=true]{background:var(--teal-soft)}
+.more{margin:8px 0 0;padding:10px 12px;border-left:3px solid var(--gold);background:var(--teal-soft);border-radius:0 8px 8px 0;font-size:14px;color:var(--ink)}
+.more[hidden]{display:none}
+.opts{display:grid;gap:10px}
+.optwrap{border:1.5px solid var(--line);border-radius:12px;padding:6px 10px 6px 4px;background:var(--bg)}
+.optwrap:has(input:checked){border-color:var(--teal);background:var(--teal-soft)}
+.optwrap:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+.optrow{display:flex;align-items:center;gap:8px}
+.optrow label{flex:1;display:flex;gap:12px;align-items:flex-start;padding:8px;cursor:pointer}
+.optrow input{margin-top:5px;accent-color:var(--teal)}
+.optrow strong{display:block}
+.optrow span{color:var(--muted);font-size:14px}
+.optrow small{font-weight:600;color:var(--teal-deep);white-space:nowrap}
+.optwrap .more{margin:0 4px 8px 8px}
+.summary{position:sticky;top:calc(14px + env(safe-area-inset-top,0px));background:var(--sum-bg);color:var(--sum-ink);border-radius:18px;padding:22px}
+@media(max-width:880px){.summary{position:static}}
+.total{font:700 clamp(40px,8vw,54px)/1 "Bricolage Grotesque",sans-serif;color:var(--gold);margin:4px 0 2px}
+.sub{color:var(--sum-muted);font-size:14px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.kpis div{border:1px solid var(--sum-line);border-radius:12px;padding:10px 12px}
+.kpis b{display:block;font-size:18px}
+.kpis span{font-size:13px;color:var(--sum-muted)}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+.summary th{font-weight:500;color:var(--sum-muted);text-align:left;padding:6px 0;border-bottom:1px solid var(--sum-line)}
+.summary td{padding:7px 0;border-bottom:1px solid var(--sum-line);vertical-align:top}
+.summary th:not(:first-child),.summary td:not(:first-child){text-align:right;padding-left:10px;white-space:nowrap}
+.summary td .chev{width:22px;height:22px;display:inline-grid;vertical-align:middle;margin-left:6px;border-color:var(--sum-line);color:var(--sum-ink)}
+.summary td .chev svg{width:11px;height:11px}
+.summary td .chev[aria-expanded=true]{background:var(--sum-line)}
+.summary tr.dd td{padding:0 0 8px;text-align:left;white-space:normal}
+.summary tr.dd .more{margin:0;background:rgba(255,255,255,.08);color:var(--sum-ink);border-left-color:var(--gold)}
+.summary tr.sum td{border-bottom:0;color:var(--sum-muted)}
+.summary tr.tot td{font-weight:700;font-size:16px;border-top:2px solid var(--sum-line);border-bottom:0;padding-top:10px}
+.btns{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn{font:600 15px "DM Sans",sans-serif;border-radius:10px;padding:10px 14px;cursor:pointer;border:1px solid var(--sum-line);background:transparent;color:var(--sum-ink)}
+.btn.main{background:var(--gold);border-color:var(--gold);color:#2B3B3C}
+.note{font-size:13px;color:var(--sum-muted);margin:14px 0 0}
+.stbl{overflow-x:auto}
+.stbl table{min-width:640px}
+.stbl th{font-size:13px;text-align:center;color:var(--muted);padding:6px 4px;font-weight:600}
+.stbl th:first-child,.stbl td:first-child{text-align:left}
+.stbl td{padding:5px 4px;border-top:1px solid var(--line)}
+.stbl input{padding:7px 8px;text-align:right;min-width:62px}
+.srow{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding:8px 0}
+.srow:first-of-type{border-top:0}
+.srow span{flex:1}
+.srow input{width:110px;text-align:right}
+.reset{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 14px;font:600 15px "DM Sans",sans-serif;cursor:pointer}
+[hidden]{display:none!important}
+@media print{
+  body{background:#fff;color:#000}.grid{display:block}fieldset,nav,.btns,.note,.lede,h1,.tag{display:none}
+  .summary{position:static;background:#fff;color:#000}.summary *{color:#000!important;border-color:#bbb!important}
+  .summary .chev{display:none}.summary tr.dd{display:table-row!important}.summary tr.dd[hidden]{display:table-row!important}
+  .summary tr.dd .more[hidden]{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <svg class="logo" viewBox="0 0 120 93" role="img" aria-label="Logo Marjo Travel : la vis aérienne de Léonard de Vinci dessinée au crayon" fill="none" stroke="currentColor" stroke-width=".65" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <filter id="pencil" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.2"/></filter>
+        <pattern id="hatch" width="2.6" height="2.6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><path d="M0 0V2.6" stroke="currentColor" stroke-width=".3"/></pattern>
+        <style>.bl{fill:var(--bg)}</style>
+      </defs>
+      <g filter="url(#pencil)">
+        <path d="M8 14L78 5L112 33L102 62L62 84L22 66L5 42Z" fill="url(#hatch)" stroke="none" opacity=".6"/>
+        <path d="M12 46L34 72M82 23L72 70M96.5 40.5L78.5 70.5M23 28.6L38 47" stroke-width=".4"/>
+        <path class="bl" stroke-width=".9" d="M8 40C22 36 38 33 53 30.7C70 28 95 29.5 106 35C98 40 80 41 57 41C38 41 20 42 8 41Z"/>
+        <path stroke-width=".8" d="M8 41C14 44 30 46.6 52 46.6M7 37.5L8.6 43.5"/>
+        <path d="M53 9V31" stroke-dasharray="1 1.2" stroke-width=".5"/>
+        <path d="M51 18V11L53 8.8L55 11.5V18M57 12V17" stroke-width=".55"/>
+        <path d="M53 31V68M54.4 31V68"/>
+        <path d="M50 48.5L35.5 72M61 48.5L76 71M53 49L44 70M57 49L66 70M44 66H67" stroke-width=".5"/>
+        <ellipse cx="55.5" cy="47.5" rx="5.5" ry="1.7" class="bl"/>
+        <path d="M49.8 65V69M58.2 65V69M49.8 69Q54 71.5 58.2 69" stroke-width=".55"/><ellipse cx="54" cy="65" rx="4.2" ry="1.4"/>
+        <ellipse cx="56.5" cy="73.5" rx="22.5" ry="4.2"/><path d="M34 74Q56 83 79 74" stroke-width=".95"/>
+        <path class="bl" stroke-width=".9" d="M14 25C26 21 52 19.5 87 20C80 23 70 27 55 31C40 30 22 28 14 25Z"/>
+        <path d="M87 20C89 18 90.5 17 88.5 15.5M20 24C40 22.5 60 21.5 80 21" stroke-width=".45"/>
+        <path d="M50 30L56 32.5M52 33.5L55 29M53 30.5L60 35.5" stroke-width=".55"/>
+      </g>
+    </svg>
+    <div>
+      <div class="brand">Marjo Travel</div>
+      <div class="tag">Organisation de voyages sur mesure</div>
+    </div>
+    <nav role="tablist" aria-label="Sections">
+      <button role="tab" id="tab1" aria-selected="true" aria-controls="p1">Devis</button>
+      <button role="tab" id="tab2" aria-selected="false" aria-controls="p2">Tarifs et paramètres</button>
+    </nav>
+  </header>
+
+  <section id="p1" role="tabpanel" aria-labelledby="tab1">
+    <h1>Calculer le devis d’un voyage</h1>
+    <p class="lede">Renseignez le projet du client et le niveau d’accompagnement. Le détail du tarif s’affiche à droite, prestation par prestation. La flèche à côté de chaque élément explique ce qu’il comprend.</p>
+    <div class="grid">
+      <div>
+        <fieldset>
+          <legend>Le projet</legend>
+          <div class="row">
+            <div>
+              <div class="lbl"><label for="dest">Destination</label><button class="chev" data-m="m_dest" aria-expanded="false" aria-label="Détails sur la destination"></button></div>
+              <select id="dest"></select>
+            </div>
+            <div>
+              <div class="lbl"><label for="days">Durée du séjour (jours)</label><button class="chev" data-m="m_days" aria-expanded="false" aria-label="Détails sur la durée"></button></div>
+              <input id="days" type="number" min="1" max="90" value="8">
+            </div>
+            <div>
+              <div class="lbl"><label for="ad">Adultes</label><button class="chev" data-m="m_ad" aria-expanded="false" aria-label="Détails sur les adultes"></button></div>
+              <input id="ad" type="number" min="1" max="20" value="2">
+            </div>
+            <div>
+              <div class="lbl"><label for="ch" id="chLbl">Enfants</label><button class="chev" data-m="m_ch" aria-expanded="false" aria-label="Détails sur les enfants"></button></div>
+              <input id="ch" type="number" min="0" max="10" value="0">
+            </div>
+          </div>
+          <p class="more" id="m_dest" hidden>Plus la destination est loin ou complexe, plus la préparation demande de temps : fuseaux horaires, vols avec escales, formalités, décalage des saisons, logistique locale. Chaque destination a son coefficient, modifiable dans l’onglet Tarifs.</p>
+          <p class="more" id="m_days" hidden>Le temps de conception augmente avec le nombre de jours à planifier : chaque journée demande de choisir où dormir, quoi visiter, comment se déplacer et où manger.</p>
+          <p class="more" id="m_ad" hidden>Chaque adulte supplémentaire ajoute un peu de travail : un billet de plus, des préférences à concilier, des réservations au nom de chacun.</p>
+          <p class="more" id="m_ch" hidden>Les enfants demandent une organisation adaptée : rythme des journées, activités accessibles, hébergements familiaux, sièges et sécurité. Leur supplément est plus léger que celui d’un adulte. L’âge limite est réglable dans l’onglet Tarifs.</p>
+        </fieldset>
+        <fieldset><legend>Cahier des charges</legend><p class="hint">Plus les envies sont précises ou contraintes, plus la conception prend de temps.</p><div class="opts" id="cx"></div></fieldset>
+        <fieldset><legend>Profondeur de l’organisation</legend><p class="hint">Ce que vous prenez en charge, de la simple recommandation à l’accompagnement pendant le voyage.</p><div class="opts" id="depth"></div></fieldset>
+        <fieldset><legend>Options</legend><div class="opts" id="extras"></div></fieldset>
+      </div>
+
+      <aside class="summary" aria-live="polite">
+        <div class="sub">Tarif de la prestation</div>
+        <div class="total" id="total">–</div>
+        <div class="sub" id="taxline"></div>
+        <div class="kpis">
+          <div><b id="kPer">–</b><span>par voyageur</span></div>
+          <div><b id="kDay">–</b><span>par jour de voyage</span></div>
+          <div><b id="kHrs">–</b><span>temps estimé</span></div>
+          <div><b id="kDep">–</b><span id="kDepL">acompte</span></div>
+        </div>
+        <div class="scroll"><table><thead><tr><th>Prestation</th><th>Temps</th><th>Montant</th></tr></thead><tbody id="lines"></tbody></table></div>
+        <div class="btns">
+          <button class="btn main" id="copy" type="button">Copier le devis</button>
+          <button class="btn" id="print" type="button">Imprimer / PDF</button>
+        </div>
+        <p class="note">Estimation hors frais réels du voyage (vols, hôtels, activités), payés directement par le client ou refacturés à part. Les commissions éventuelles des partenaires ne sont pas incluses.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section id="p2" role="tabpanel" aria-labelledby="tab2" hidden>
+    <h1>Tarifs et paramètres</h1>
+    <p class="lede">Tout ce qui entre dans le calcul se règle ici. Les modifications s’appliquent tout de suite au devis et sont mémorisées sur cet appareil.</p>
+    <fieldset><legend>Général</legend><div id="gen"></div></fieldset>
+    <fieldset><legend>Coefficients de destination</legend><p class="hint">1 = aucun supplément. 1,25 = 25 % de temps en plus sur les prestations concernées.</p><div id="sdest"></div></fieldset>
+    <fieldset><legend>Coefficients du cahier des charges</legend><div id="scx"></div></fieldset>
+    <fieldset><legend>Prestations : temps passé</legend>
+      <p class="hint">Heures fixes + heures par jour de séjour. Les colonnes de droite indiquent la part de la prestation incluse dans chaque formule : 0 = non incluse, 0,5 = version allégée, 1 = complète, plus de 1 = renforcée.</p>
+      <div class="stbl"><table><thead><tr><th>Prestation</th><th>Heures fixes</th><th>Heures par jour</th><th>Conseil</th><th>Organisation</th><th>Clé en main</th><th>Assistance</th></tr></thead><tbody id="slines"></tbody></table></div>
+    </fieldset>
+    <fieldset><legend>Options</legend><p class="hint">Heures ajoutées, ou pourcentage de majoration sur la prestation.</p><div id="sext"></div></fieldset>
+    <button class="reset" id="reset" type="button">Revenir aux valeurs de départ</button>
+  </section>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const eur = n => new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(n);
+const hfmt = h => { const m = Math.round(h*4)/4; return (Number.isInteger(m)?m:m.toString().replace(".",",")) + " h"; };
+const CHEV = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg>`;
+const chev = (m,label) => `<button type="button" class="chev" data-m="${m}" aria-expanded="false" aria-label="Détails : ${label}">${CHEV}</button>`;
+
+const DEST = [
+  {id:"fr", name:"France"}, {id:"eu", name:"Europe proche"}, {id:"eul", name:"Europe lointaine / Maghreb"},
+  {id:"lc", name:"Long-courrier"}, {id:"mp", name:"Multi-pays / tour du monde"}
+];
+const CX = [
+  {id:"s", name:"Simple", desc:"Envies claires, budget souple, peu de contraintes.", more:"Le client sait ce qu’il veut et reste flexible. Un ou deux échanges suffisent pour cadrer le projet, et il y a peu d’arbitrages à faire."},
+  {id:"n", name:"Standard", desc:"Quelques critères précis (rythme, style, budget cadré).", more:"Le client a des critères clairs sur le rythme, le type d’hébergement ou le budget. Il faut comparer plusieurs options et construire un programme équilibré."},
+  {id:"m", name:"Sur mesure", desc:"Beaucoup d’envies, contraintes de groupe, mobilité réduite, régimes…", more:"Plusieurs personnes aux envies différentes, des contraintes de santé, d’accessibilité ou d’alimentation, ou un programme très détaillé. Beaucoup plus de recherches et d’allers-retours."},
+  {id:"l", name:"Haut de gamme", desc:"Expériences privées, adresses d’exception, forte exigence.", more:"Accès privés, guides experts, adresses confidentielles, hébergements d’exception. Il faut du réseau, de la négociation et un contrôle qualité très poussé."}
+];
+const DEPTH = [
+  {id:"c", name:"Conseil", desc:"Itinéraire détaillé et adresses. Le client réserve lui-même.", more:"Vous livrez un itinéraire complet avec une sélection d’hébergements, d’activités et de restaurants, mais le client effectue lui-même les réservations. Il garde la main et paie moins."},
+  {id:"o", name:"Organisation", desc:"Itinéraire + réservation des hébergements, transports et activités.", more:"En plus de l’itinéraire, vous réservez pour le client les hébergements, transports et activités, et vous lui remettez un carnet de voyage avec tous les justificatifs."},
+  {id:"k", name:"Clé en main", desc:"Tout organisé, carnet complet, suivi renforcé avant le départ.", more:"Tout est pris en charge : formalités, assurances, transferts, billetterie, carnet de voyage soigné. Le suivi avant le départ est renforcé, le client n’a rien à gérer."},
+  {id:"a", name:"Clé en main + assistance", desc:"Clé en main, avec disponibilité pendant le voyage.", more:"La formule clé en main, plus votre disponibilité pendant tout le voyage pour gérer les imprévus : vol annulé, hôtel défaillant, changement de programme, question sur place."}
+];
+const LINES = [
+  {k:"disc", name:"Entretien découverte et cahier des charges", note:"Échanges, questionnaire, définition du projet", more:"Un ou plusieurs échanges pour comprendre le profil des voyageurs, leurs envies, leur budget et leurs contraintes. Il aboutit à un cahier des charges validé avant de commencer.", f:1.5, d:0, lv:[1,1,1,1]},
+  {k:"itin", name:"Conception de l’itinéraire", note:"Recherche, rythme, cohérence, alternatives", more:"Recherche de la destination, choix des étapes, répartition des journées, temps de trajet réalistes et solutions de repli en cas de mauvais temps ou d’imprévu.", f:0, d:1.1, lv:[1,1,1,1], cx:1, dest:1},
+  {k:"hotel", name:"Hébergements", note:"Sélection, comparaison, réservation", more:"Sélection des hôtels ou locations selon le style, le budget et l’emplacement, comparaison des tarifs et conditions d’annulation, puis réservation.", f:0, d:.45, lv:[.5,1,1,1], cx:1, trav:1},
+  {k:"trans", name:"Transports et transferts", note:"Vols, trains, voiture, transferts", more:"Recherche des meilleurs vols, trains ou locations de voiture, gestion des correspondances et organisation des transferts entre aéroport, gare et hébergements.", f:1.5, d:.12, lv:[.3,1,1,1], cx:1, dest:1, trav:1},
+  {k:"act", name:"Activités et visites", note:"Sélection, billetterie, guides", more:"Choix des visites et expériences, réservation des billets coupe-file, des guides et des excursions, avec les horaires organisés pour éviter les temps morts.", f:0, d:.4, lv:[.4,1,1,1], cx:1, trav:1},
+  {k:"resto", name:"Restaurants et bonnes adresses", note:"Sélection, réservations ciblées", more:"Une sélection de tables et d’adresses locales adaptées aux goûts du groupe, avec réservation des lieux incontournables ou très demandés.", f:0, d:.25, lv:[.5,.7,1,1], cx:1},
+  {k:"form", name:"Formalités et assurances", note:"Visas, santé, assurances, documents", more:"Vérification des documents d’entrée (passeport, visa, autorisation de voyage), des vaccins éventuels, conseils sur l’assurance voyage et sur les démarches à anticiper.", f:1, d:0, lv:[.3,.6,1,1], dest:1, trav:1, destOnly:1},
+  {k:"carn", name:"Carnet de voyage personnalisé", note:"Programme jour par jour, contacts, conseils", more:"Un document soigné avec le programme jour par jour, les adresses, les horaires, les justificatifs de réservation, les contacts utiles et vos conseils pratiques.", f:1.5, d:.15, lv:[.6,1,1.3,1.3]},
+  {k:"suivi", name:"Suivi et ajustements avant le départ", note:"Rendez-vous, modifications, points d’étape", more:"Points d’étape avec le client, ajustements du programme, réponses à ses questions et vérification finale de toutes les réservations avant le départ.", f:1.5, d:0, lv:[.5,1,1.5,1.5], cx:1},
+  {k:"assist", name:"Assistance pendant le voyage", note:"Messagerie, gestion des imprévus", more:"Disponibilité par messagerie ou téléphone pendant le voyage, et gestion des imprévus : retard, annulation, perte de documents, changement de programme.", f:1, d:.5, lv:[0,0,.25,1]},
+  {k:"bilan", name:"Bilan après le voyage", note:"Retour d’expérience, suite à donner", more:"Un échange après le retour pour recueillir les impressions du client, ajuster votre façon de faire, et préparer une recommandation ou un futur voyage.", f:1, d:0, lv:[0,.3,.5,.5]}
+];
+const EXTRAS = [
+  {id:"surprise", name:"Voyage surprise", desc:"Programme dévoilé au fil du voyage.", more:"Les voyageurs ne connaissent pas le programme à l’avance. Vous préparez des enveloppes ou des révélations jour par jour : cela demande plus de mise en scène et de rigueur logistique.", h:3},
+  {id:"visio", name:"Rendez-vous supplémentaires", desc:"Deux points d’étape en plus.", more:"Deux échanges en plus, en visio ou en personne, pour faire valider le programme ou revoir certains choix avec le client.", h:2},
+  {id:"modif", name:"Modifications illimitées", desc:"Ajustements sans limite jusqu’au départ.", more:"Le client peut modifier son programme autant de fois qu’il le souhaite jusqu’au départ. Sans cette option, un nombre limité d’ajustements est inclus.", h:2.5},
+  {id:"rush", name:"Délai court (moins de 4 semaines)", desc:"Majoration sur la prestation.", more:"Quand le départ est proche, tout doit être traité en priorité et les disponibilités se réduisent : la prestation est majorée.", pct:25},
+  {id:"saison", name:"Haute saison ou dates imposées", desc:"Majoration sur la prestation.", more:"En période de forte affluence ou avec des dates non flexibles, trouver des disponibilités demande beaucoup plus de recherches et de comparaisons.", pct:10}
+];
+
+const DEFAULTS = {
+  rate:50, fees:30, min:150, tva:0, deposit:30, round:10, childAge:12, adultPct:8, childPct:5,
+  dest:{fr:1, eu:1.1, eul:1.25, lc:1.4, mp:1.6},
+  cx:{s:.8, n:1, m:1.3, l:1.6},
+  lines:Object.fromEntries(LINES.map(L=>[L.k,{f:L.f,d:L.d,lv:[...L.lv]}])),
+  extras:Object.fromEntries(EXTRAS.map(e=>[e.id,e.h??e.pct]))
+};
+const clone = o => JSON.parse(JSON.stringify(o));
+let S = clone(DEFAULTS);
+const merge = (t,s)=>{ for(const k in s){ if(s[k]&&typeof s[k]==="object"&&!Array.isArray(s[k])&&t[k]) merge(t[k],s[k]); else if(k in t) t[k]=s[k]; } };
+try{ const saved = localStorage.getItem("marjo-settings"); if(saved) merge(S, JSON.parse(saved)); }catch(e){}
+const save = () => { try{ localStorage.setItem("marjo-settings", JSON.stringify(S)); }catch(e){} };
+
+function opt(name, id, checked, type, title, desc, more, small){
+  return `<div class="optwrap"><div class="optrow"><label><input type="${type}" name="${name}" value="${id}" ${checked?"checked":""}><div><strong>${title}</strong><span>${desc}</span></div></label>${small?`<small>${small}</small>`:""}${chev("m_"+name+id,title)}</div><p class="more" id="m_${name}${id}" hidden>${more}</p></div>`;
+}
+$("dest").innerHTML = DEST.map((d,i)=>`<option value="${d.id}" ${d.id==="eu"?"selected":""}>${d.name}</option>`).join("");
+$("cx").innerHTML = CX.map(c=>opt("cx",c.id,c.id==="n","radio",c.name,c.desc,c.more)).join("");
+$("depth").innerHTML = DEPTH.map(c=>opt("depth",c.id,c.id==="o","radio",c.name,c.desc,c.more)).join("");
+const extraSmall = e => e.h!==undefined ? "+"+S.extras[e.id]+" h" : "+"+S.extras[e.id]+" %";
+function renderExtras(){ const on=[...document.querySelectorAll("#extras input:checked")].map(i=>i.value);
+  $("extras").innerHTML = EXTRAS.map(e=>opt("ex",e.id,on.includes(e.id),"checkbox",e.name,e.desc,e.more,extraSmall(e))).join(""); }
+renderExtras();
+
+// ---------- Paramètres ----------
+const num = (p,v,step,w) => `<input type="number" step="${step||"any"}" data-p="${p}" value="${v}" ${w?`style="width:${w}"`:""}>`;
+function renderSettings(){
+  $("gen").innerHTML = [
+    ["Taux horaire (€)","rate",1],["Frais de dossier et outils (€)","fees",1],["Forfait minimum (€)","min",1],
+    ["Acompte à la commande (%)","deposit",1],["Arrondir le prix au multiple de (€)","round",1],
+    ["Âge limite pour être compté comme enfant (ans)","childAge",1],
+    ["Supplément par adulte en plus du premier (%)","adultPct",1],["Supplément par enfant (%)","childPct",1]
+  ].map(([l,p,s])=>`<div class="srow"><span>${l}</span>${num(p,S[p],s)}</div>`).join("") +
+  `<div class="srow"><span>TVA</span><select data-p="tva" style="width:230px"><option value="0" ${S.tva==0?"selected":""}>Non applicable (franchise en base)</option><option value="0.2" ${S.tva==0.2?"selected":""}>20 %</option></select></div>`;
+  $("sdest").innerHTML = DEST.map(d=>`<div class="srow"><span>${d.name}</span>${num("dest."+d.id,S.dest[d.id],.05)}</div>`).join("");
+  $("scx").innerHTML = CX.map(c=>`<div class="srow"><span>${c.name}</span>${num("cx."+c.id,S.cx[c.id],.05)}</div>`).join("");
+  $("slines").innerHTML = LINES.map(L=>`<tr><td>${L.name}</td><td>${num("lines."+L.k+".f",S.lines[L.k].f,.25)}</td><td>${num("lines."+L.k+".d",S.lines[L.k].d,.05)}</td>${[0,1,2,3].map(i=>`<td>${num("lines."+L.k+".lv."+i,S.lines[L.k].lv[i],.1)}</td>`).join("")}</tr>`).join("");
+  $("sext").innerHTML = EXTRAS.map(e=>`<div class="srow"><span>${e.name}</span>${num("extras."+e.id,S.extras[e.id],e.h!==undefined?.5:1)}<span style="flex:none;width:28px">${e.h!==undefined?"h":"%"}</span></div>`).join("");
+  updChild();
+}
+function updChild(){ $("chLbl").textContent = `Enfants (moins de ${S.childAge} ans)`; }
+$("p2").addEventListener("input",e=>{
+  const p=e.target.dataset.p; if(!p) return;
+  const parts=p.split("."); let o=S; for(let i=0;i<parts.length-1;i++) o=o[parts[i]];
+  o[parts.at(-1)] = parseFloat(e.target.value)||0;
+  save(); updChild(); renderExtras(); calc();
+});
+$("reset").addEventListener("click",()=>{ S=clone(DEFAULTS); save(); renderSettings(); renderExtras(); calc(); });
+
+// ---------- Onglets ----------
+["tab1","tab2"].forEach((id,i)=>$(id).addEventListener("click",()=>{
+  $("tab1").setAttribute("aria-selected",i===0); $("tab2").setAttribute("aria-selected",i===1);
+  $("p1").hidden = i!==0; $("p2").hidden = i!==1; window.scrollTo({top:0});
+}));
+
+// ---------- Infobulles dépliantes ----------
+const openSet = new Set();
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".chev"); if(!b) return;
+  const el=$(b.dataset.m); const open=el.hidden;
+  el.hidden=!open; b.setAttribute("aria-expanded",open);
+  if(b.closest("#lines")){ open?openSet.add(b.dataset.m):openSet.delete(b.dataset.m); }
+});
+document.querySelectorAll("button.chev:not([innerHTML])").forEach(b=>{ if(!b.innerHTML.trim()) b.innerHTML=CHEV; });
+
+// ---------- Calcul ----------
+let lastText="";
+function calc(){
+  const d=Math.max(1,+$("days").value||1), ad=Math.max(1,+$("ad").value||1), ch=Math.max(0,+$("ch").value||0), t=ad+ch;
+  const destId=$("dest").value, destF=S.dest[destId];
+  const cxId=document.querySelector("input[name=cx]:checked").value, cxO=CX.find(c=>c.id===cxId), cxM=S.cx[cxId];
+  const dpI=DEPTH.findIndex(x=>x.id===document.querySelector("input[name=depth]:checked").value), dp=DEPTH[dpI];
+  const {rate,fees,tva}=S;
+  const travF = 1 + S.adultPct/100*(ad-1) + S.childPct/100*ch;
+  const rows=[];
+  LINES.forEach(L=>{
+    const c=S.lines[L.k], lv=c.lv[dpI]; if(!lv) return;
+    let h=(c.f+c.d*d)*lv;
+    if(L.cx) h*=cxM; if(L.dest) h*=destF; if(L.trav) h*=travF;
+    if(L.destOnly && ["fr","eu"].includes(destId)) h*=.4;
+    rows.push({k:L.k,name:L.name+((lv<1&&dpI===0)?" (version allégée)":""),note:L.note,more:L.more,h});
+  });
+  const on=[...document.querySelectorAll("#extras input:checked")].map(i=>EXTRAS.find(e=>e.id===i.value));
+  on.filter(e=>e.h!==undefined).forEach(e=>rows.push({k:"x"+e.id,name:e.name,note:"Option",more:e.more,h:S.extras[e.id]}));
+  rows.forEach(r=>{ r.h=r.h>0?Math.max(.25,Math.round(r.h*4)/4):0; r.amt=r.h*rate; });
+  const sub=rows.reduce((s,r)=>s+r.amt,0), baseH=rows.reduce((s,r)=>s+r.h,0);
+  const sur=on.filter(e=>e.pct!==undefined).map(e=>({name:e.name+" ("+S.extras[e.id]+" %)",a:sub*S.extras[e.id]/100}));
+  const surT=sur.reduce((s,x)=>s+x.a,0);
+  let ht=sub+surT+fees, minNote="";
+  if(ht<S.min){ minNote="Forfait minimum appliqué"; ht=S.min; }
+  const rd=S.round>0?S.round:1; ht=Math.round(ht/rd)*rd;
+  const ttc=ht*(1+tva), hours=baseH+(rate?surT/rate:0);
+
+  $("total").textContent=eur(ttc);
+  $("taxline").textContent=tva?`${eur(ht)} HT, TVA 20 %`:"TVA non applicable, art. 293 B du CGI";
+  $("kPer").textContent=eur(ttc/t); $("kDay").textContent=eur(ttc/d); $("kHrs").textContent=hfmt(hours);
+  $("kDep").textContent=eur(ttc*S.deposit/100); $("kDepL").textContent=`acompte à ${S.deposit} %`;
+
+  let html=rows.map(r=>`<tr><td>${r.name}${chev("dd_"+r.k,r.name).replace('class="chev"','class="chev"').replace(`aria-expanded="false"`,`aria-expanded="${openSet.has("dd_"+r.k)}"`)}<div class="sub" style="font-size:12px">${r.note}</div></td><td>${hfmt(r.h)}</td><td>${eur(r.amt)}</td></tr><tr class="dd"><td colspan="3"><p class="more" id="dd_${r.k}" ${openSet.has("dd_"+r.k)?"":"hidden"}>${r.more}</p></td></tr>`).join("");
+  sur.forEach(s=>html+=`<tr class="sum"><td>${s.name}</td><td></td><td>${eur(s.a)}</td></tr>`);
+  html+=`<tr class="sum"><td>Frais de dossier et outils</td><td></td><td>${eur(fees)}</td></tr>`;
+  if(minNote) html+=`<tr class="sum"><td>${minNote}</td><td></td><td></td></tr>`;
+  html+=`<tr class="tot"><td>Total${tva?" TTC":""}</td><td></td><td>${eur(ttc)}</td></tr>`;
+  $("lines").innerHTML=html;
+
+  lastText=[
+    "Marjo Travel – Organisation de voyage sur mesure",
+    `${$("dest").selectedOptions[0].text}, ${d} jours, ${ad} adulte${ad>1?"s":""}${ch?`, ${ch} enfant${ch>1?"s":""}`:""}`,
+    `Cahier des charges : ${cxO.name} | Formule : ${dp.name}`,"",
+    ...rows.map(r=>`- ${r.name} : ${hfmt(r.h)} = ${eur(r.amt)}`),
+    ...sur.map(s=>`- ${s.name} : ${eur(s.a)}`),
+    `- Frais de dossier et outils : ${eur(fees)}`,"",
+    `Total${tva?" TTC":""} : ${eur(ttc)} (${eur(ttc/t)} par voyageur)`,
+    `Acompte à la commande (${S.deposit} %) : ${eur(ttc*S.deposit/100)}`,
+    tva?"":"TVA non applicable, art. 293 B du CGI"
+  ].join("\n");
+}
+$("p1").addEventListener("input",calc);
+$("copy").addEventListener("click",async()=>{
+  const b=$("copy");
+  try{ await navigator.clipboard.writeText(lastText); b.textContent="Devis copié"; }catch(e){ b.textContent="Copie impossible"; }
+  setTimeout(()=>b.textContent="Copier le devis",1800);
+});
+$("print").addEventListener("click",()=>window.print());
+document.querySelectorAll("button.chev").forEach(b=>{ if(!b.innerHTML.trim()) b.innerHTML=CHEV; });
+renderSettings(); calc();
+</script>
+</body>
+</html>
