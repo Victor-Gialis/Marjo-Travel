@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f5f0">
+    <title>Votre projet de voyage — Marjo Travel</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #20342d;
+        --muted: #728078;
+        --paper: #f6f5f0;
+        --white: #fff;
+        --line: #e6e8e2;
+        --green: #355a49;
+        --green-light: #edf2eb;
+        --orange: #d78a60;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button, input, textarea { font: inherit; }
+
+      .topbar {
+        height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 max(6vw, 24px);
+        border-bottom: 1px solid rgba(32, 52, 45, .08);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: var(--ink);
+        font-family: Georgia, serif;
+        font-size: 23px;
+        letter-spacing: -.7px;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        width: 31px;
+        height: 31px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--green);
+        color: white;
+        font-family: Georgia, serif;
+        font-size: 19px;
+      }
+
+      .top-note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      main {
+        width: min(1120px, calc(100% - 48px));
+        margin: 0 auto;
+        padding: 56px 0 72px;
+      }
+
+      .intro {
+        max-width: 700px;
+        margin-bottom: 38px;
+      }
+
+      .eyebrow {
+        margin: 0 0 13px;
+        color: var(--green);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
+      }
+
+      h1, h2, p { margin-top: 0; }
+
+      h1 {
+        margin-bottom: 13px;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(36px, 5vw, 54px);
+        font-weight: 400;
+        letter-spacing: -1.6px;
+        line-height: 1.08;
+      }
+
+      .intro-copy {
+        max-width: 590px;
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(0, 1.12fr) minmax(330px, .88fr);
+        align-items: start;
+        gap: 26px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--white);
+      }
+
+      .form-panel { padding: 30px; }
+
+      .section-heading {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .step {
+        color: var(--orange);
+        font-family: Georgia, serif;
+        font-size: 19px;
+      }
+
+      h2 {
+        margin-bottom: 0;
+        font-family: Georgia, serif;
+        font-size: 22px;
+        font-weight: 400;
+        letter-spacing: -.4px;
+      }
+
+      .field { margin-bottom: 22px; }
+
+      label, .field-label {
+        display: block;
+        margin-bottom: 9px;
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .optional {
+        color: #9aa39d;
+        font-weight: 400;
+      }
+
+      input, textarea {
+        width: 100%;
+        border: 1px solid #dfe4de;
+        border-radius: 8px;
+        outline: 0;
+        background: #fff;
+        color: var(--ink);
+        transition: border-color .2s, box-shadow .2s;
+      }
+
+      input { height: 48px; padding: 0 14px; }
+      textarea { min-height: 104px; padding: 13px 14px; resize: vertical; }
+
+      input::placeholder, textarea::placeholder { color: #a4ada6; }
+
+      input:focus, textarea:focus {
+        border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(53, 90, 73, .1);
+      }
+
+      .helper {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      fieldset {
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+      }
+
+      legend { margin-bottom: 13px; }
+
+      .level-list { display: grid; gap: 10px; }
+
+      .level-option {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin: 0;
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: border-color .2s, background .2s;
+      }
+
+      .level-option:has(input:checked) {
+        border-color: var(--green);
+        background: #f6f8f5;
+      }
+
+      .level-option input {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+        margin: 2px 0 0;
+        accent-color: var(--green);
+      }
+
+      .level-copy { flex: 1; }
+
+      .level-title {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 14px;
+        font-weight: 650;
+      }
+
+      .level-description {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.45;
+      }
+
+      .level-price {
+        white-space: nowrap;
+        color: var(--green);
+        font-size: 14px;
+        font-weight: 650;
+      }
+
+      .quote-panel {
+        position: sticky;
+        top: 24px;
+        overflow: hidden;
+      }
+
+      .quote-header {
+        padding: 26px 26px 21px;
+        background: var(--green);
+        color: white;
+      }
+
+      .quote-header .eyebrow {
+        margin-bottom: 9px;
+        color: #c8d8ca;
+      }
+
+      .quote-header h2 { font-size: 24px; }
+
+      .quote-project {
+        min-height: 18px;
+        margin: 9px 0 0;
+        color: #d3ded5;
+        font-size: 13px;
+      }
+
+      .quote-content { padding: 21px 26px 25px; }
+
+      .item-list { margin: 0; padding: 0; list-style: none; }
+
+      .quote-item {
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .item-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .item-name { flex: 1; font-size: 13px; font-weight: 600; }
+      .item-price { white-space: nowrap; font-size: 13px; }
+
+      .item-toggle {
+        width: 26px;
+        height: 26px;
+        display: grid;
+        flex: 0 0 26px;
+        place-items: center;
+        padding: 0;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: transparent;
+        color: var(--green);
+        cursor: pointer;
+        font-size: 17px;
+        line-height: 1;
+        transition: transform .2s, background .2s;
+      }
+
+      .item-toggle:hover { background: var(--green-light); }
+      .item-toggle[aria-expanded="true"] { transform: rotate(90deg); }
+
+      .item-detail {
+        margin: 10px 0 0 36px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .total-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 21px 0 4px;
+      }
+
+      .total-label { font-family: Georgia, serif; font-size: 18px; }
+
+      .total-value {
+        color: var(--green);
+        font-family: Georgia, serif;
+        font-size: 28px;
+        letter-spacing: -.7px;
+      }
+
+      .total-note {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.55;
+      }
+
+      .quote-footer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+        padding: 13px;
+        border-radius: 9px;
+        background: var(--green-light);
+        color: var(--green);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .quote-footer span:first-child { font-size: 17px; }
+
+      @media (max-width: 760px) {
+        .topbar { height: 66px; }
+        .top-note { display: none; }
+        main { padding-top: 38px; }
+        .workspace { grid-template-columns: 1fr; }
+        .quote-panel { position: static; grid-row: 1; }
+        .form-panel { padding: 24px; }
+      }
+
+      @media (max-width: 420px) {
+        main { width: min(100% - 32px, 1120px); }
+        .topbar { padding-right: 16px; padding-left: 16px; }
+        .quote-header, .quote-content { padding-right: 20px; padding-left: 20px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Marjo Travel, accueil">
+        <span class="brand-mark" aria-hidden="true">m</span>
+        <span>marjo travel</span>
+      </a>
+      <span class="top-note">Le voyage commence par une belle idée.</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">Votre voyage, à votre façon</p>
+        <h1 id="page-title">Imaginons votre prochain voyage.</h1>
+        <p class="intro-copy">Décrivez le projet de votre client et choisissez le niveau d’accompagnement souhaité. Le détail du tarif s’ajuste en toute transparence.</p>
+      </section>
+
+      <div class="workspace">
+        <section class="panel form-panel" aria-labelledby="project-heading">
+          <div class="section-heading">
+            <span class="step" aria-hidden="true">01</span>
+            <h2 id="project-heading">Le projet du client</h2>
+          </div>
+
+          <div class="field">
+            <label for="client-name">Nom du client <span class="optional">(facultatif)</span></label>
+            <input id="client-name" name="client-name" type="text" placeholder="Ex. Camille et Thomas" autocomplete="name">
+          </div>
+
+          <div class="field">
+            <label for="project">Parlez-nous de son projet</label>
+            <textarea id="project" name="project" placeholder="Ex. Un voyage de noces au Japon, entre villes animées et nuits dans un ryokan…"></textarea>
+            <p class="helper">Une destination, une occasion ou une envie particulière : quelques mots suffisent.</p>
+          </div>
+
+          <fieldset>
+            <legend class="field-label">Niveau d’accompagnement</legend>
+            <div class="level-list">
+              <label class="level-option">
+                <input type="radio" name="level" value="essentiel">
+                <span class="level-copy">
+                  <span class="level-title">Les bonnes adresses</span>
+                  <span class="level-description">Un itinéraire personnalisé pour partir en toute autonomie.</span>
+                </span>
+                <span class="level-price">190 €</span>
+              </label>
+              <label class="level-option">
+                <input type="radio" name="level" value="serenite" checked>
+                <span class="level-copy">
+                  <span class="level-title">L’esprit libre</span>
+                  <span class="level-description">Un voyage organisé de A à Z, avec notre aide pour réserver.</span>
+                </span>
+                <span class="level-price">390 €</span>
+              </label>
+              <label class="level-option">
+                <input type="radio" name="level" value="signature">
+                <span class="level-copy">
+                  <span class="level-title">Le grand sur-mesure</span>
+                  <span class="level-description">Une prise en charge complète, avant et pendant le voyage.</span>
+                </span>
+                <span class="level-price">690 €</span>
+              </label>
+            </div>
+          </fieldset>
+        </section>
+
+        <aside class="panel quote-panel" aria-labelledby="quote-heading" aria-live="polite">
+          <div class="quote-header">
+            <p class="eyebrow">Votre estimation</p>
+            <h2 id="quote-heading">Le détail du tarif</h2>
+            <p class="quote-project" id="quote-project">Accompagnement · L’esprit libre</p>
+          </div>
+          <div class="quote-content">
+            <ul class="item-list" id="item-list"></ul>
+            <div class="total-row">
+              <span class="total-label">Total des prestations</span>
+              <strong class="total-value" id="total">390 €</strong>
+            </div>
+            <p class="total-note">Tarif de conception et d’accompagnement. Le transport et l’hébergement sont réglés directement par le client auprès des prestataires.</p>
+            <div class="quote-footer">
+              <span aria-hidden="true">✦</span>
+              <span>Chaque voyage est unique. Cette estimation sera affinée selon le projet de votre client.</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const packages = {
+        essentiel: {
+          name: "Les bonnes adresses",
+          items: [
+            ["Échange découverte", 40, "Nous faisons le point sur les envies, le budget et le rythme de voyage de votre client."],
+            ["Itinéraire personnalisé", 110, "Un parcours jour par jour, adapté à ses dates et à ses centres d’intérêt."],
+            ["Carnet de voyage", 40, "Une sélection d’adresses et de conseils pratiques à emporter, au format numérique."]
+          ]
+        },
+        serenite: {
+          name: "L’esprit libre",
+          items: [
+            ["Échange découverte", 50, "Nous faisons le point sur les envies, le budget et le rythme de voyage de votre client."],
+            ["Itinéraire personnalisé", 150, "Un parcours jour par jour, adapté à ses dates et à ses centres d’intérêt."],
+            ["Carnet de voyage", 70, "Une sélection d’adresses, les informations utiles et les conseils pratiques réunis au même endroit."],
+            ["Aide aux réservations", 120, "Nous accompagnons votre client dans ses réservations et vérifions les étapes importantes."]
+          ]
+        },
+        signature: {
+          name: "Le grand sur-mesure",
+          items: [
+            ["Échange découverte", 60, "Un rendez-vous approfondi pour comprendre les envies, le budget et chaque détail du projet."],
+            ["Itinéraire personnalisé", 220, "Un parcours entièrement conçu sur mesure, avec des alternatives selon le rythme du séjour."],
+            ["Carnet de voyage premium", 100, "Un carnet détaillé avec les adresses choisies, les informations pratiques et les conseils de voyage."],
+            ["Réservations prises en charge", 170, "Nous organisons les réservations et coordonnons les différentes étapes du séjour."],
+            ["Assistance pendant le voyage", 140, "Une aide à distance reste disponible pendant le séjour en cas de question ou d’imprévu."]
+          ]
+        }
+      };
+
+      const itemList = document.querySelector("#item-list");
+      const total = document.querySelector("#total");
+      const quoteProject = document.querySelector("#quote-project");
+      const currency = new Intl.NumberFormat("fr-FR", {
+        style: "currency",
+        currency: "EUR",
+        maximumFractionDigits: 0
+      });
+
+      function renderQuote() {
+        const selected = document.querySelector('input[name="level"]:checked');
+        const chosen = packages[selected.value];
+        const clientName = document.querySelector("#client-name").value.trim();
+        const project = document.querySelector("#project").value.trim();
+
+        itemList.replaceChildren();
+        chosen.items.forEach(([name, price, description], index) => {
+          const item = document.createElement("li");
+          item.className = "quote-item";
+
+          const row = document.createElement("div");
+          row.className = "item-row";
+          const title = document.createElement("span");
+          title.className = "item-name";
+          title.textContent = name;
+          const amount = document.createElement("span");
+          amount.className = "item-price";
+          amount.textContent = currency.format(price);
+          const toggle = document.createElement("button");
+          toggle.className = "item-toggle";
+          toggle.type = "button";
+          toggle.textContent = "›";
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.setAttribute("aria-label", `Détail : ${name}`);
+          toggle.setAttribute("aria-controls", `detail-${index}`);
+
+          const detail = document.createElement("p");
+          detail.className = "item-detail";
+          detail.id = `detail-${index}`;
+          detail.hidden = true;
+          detail.textContent = description;
+          toggle.addEventListener("click", () => {
+            const expanded = toggle.getAttribute("aria-expanded") === "true";
+            toggle.setAttribute("aria-expanded", String(!expanded));
+            detail.hidden = expanded;
+          });
+
+          row.append(title, amount, toggle);
+          item.append(row, detail);
+          itemList.append(item);
+        });
+
+        const sum = chosen.items.reduce((amount, item) => amount + item[1], 0);
+        total.textContent = currency.format(sum);
+        const context = project || "Votre projet de voyage";
+        quoteProject.textContent = `${clientName ? `${clientName} · ` : ""}${context} · ${chosen.name}`;
+      }
+
+      document.querySelectorAll('input[name="level"], #client-name, #project')
+        .forEach((input) => input.addEventListener("input", renderQuote));
+      renderQuote();
+    </script>
+  </body>
+</html>
